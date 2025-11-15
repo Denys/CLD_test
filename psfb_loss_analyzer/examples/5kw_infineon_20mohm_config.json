@@ -1,0 +1,211 @@
+{
+  "project_name": "5kW High-Voltage PSFB with Infineon IMZA65R020M2H (300V\u219248V)",
+  "topology": {
+    "v_in": {
+      "min": 200.0,
+      "nominal": 300.0,
+      "max": 400.0
+    },
+    "v_out": 48.0,
+    "p_out": 5000.0,
+    "f_sw": 150000.0,
+    "phase_shift_min": 15.0,
+    "phase_shift_max": 165.0,
+    "n_phases": 1,
+    "dead_time_primary": 2.5e-07,
+    "dead_time_secondary": 1.5e-07,
+    "transformer_turns_ratio": 3.125
+  },
+  "components": {
+    "primary_mosfets": {
+      "part_number": "IMZA65R020M2H",
+      "v_dss": 650.0,
+      "i_d_continuous": 90.0,
+      "r_dson_25c": 0.016,
+      "r_dson_25c_max": 0.02,
+      "r_dson_150c": 0.022,
+      "r_dson_150c_max": 0.028,
+      "q_g": 8.5e-08,
+      "q_gs": 2.5e-08,
+      "q_gd": 2.8e-08,
+      "v_gs_plateau": 4.8,
+      "capacitances": {
+        "c_iss_constant": null,
+        "c_oss_constant": null,
+        "c_rss_constant": null,
+        "capacitance_curve": [
+          [
+            25.0,
+            4.5e-09,
+            1.8e-10,
+            4.5e-11
+          ],
+          [
+            100.0,
+            4.2e-09,
+            9.5e-11,
+            2.2e-11
+          ],
+          [
+            200.0,
+            4e-09,
+            6e-11,
+            1.4e-11
+          ],
+          [
+            400.0,
+            3.9e-09,
+            4e-11,
+            9e-12
+          ],
+          [
+            600.0,
+            3.85e-09,
+            3e-11,
+            7e-12
+          ]
+        ]
+      },
+      "t_r": 1.8e-08,
+      "t_f": 1.4e-08,
+      "v_sd": 2.2,
+      "q_rr": 1.5e-08,
+      "t_rr": 1.2e-08,
+      "r_th_jc": 0.5,
+      "t_j_max": 175.0,
+      "v_gs_drive": 18.0,
+      "r_g_internal": 1.5,
+      "r_g_external": 5.0
+    },
+    "secondary_rectifier_type": "synchronous_mosfet",
+    "transformer": {
+      "core_geometry": {
+        "core_type": "PQ80/60",
+        "effective_area": 0.00123,
+        "effective_length": 0.188,
+        "effective_volume": 0.000231,
+        "window_area": 0.0011,
+        "b_sat": 0.39
+      },
+      "core_material": "3C95",
+      "core_loss_coefficients": {
+        "k": 38.8,
+        "alpha": 1.63,
+        "beta": 2.62,
+        "temperature": 100.0
+      },
+      "primary_winding": {
+        "n_turns": 25,
+        "wire_diameter": 0.0012,
+        "wire_conductors": 80,
+        "dc_resistance": 0.0085,
+        "layers": 3,
+        "foil_winding": false
+      },
+      "secondary_winding": {
+        "n_turns": 8,
+        "wire_diameter": 0.0004,
+        "wire_conductors": 1,
+        "dc_resistance": 0.00035,
+        "layers": 2,
+        "foil_winding": true
+      },
+      "leakage_inductance": 3.5e-06,
+      "magnetizing_inductance": 0.00045,
+      "isolation_capacitance": 1.8e-10
+    },
+    "output_inductor": {
+      "inductance": 8e-06,
+      "dc_resistance": 0.00025,
+      "ac_resistance_100khz": 0.0007,
+      "core_loss_density": 250000.0,
+      "core_volume": 2.2e-05,
+      "current_rating": 120.0,
+      "saturation_current": 150.0
+    },
+    "input_capacitor": {
+      "capacitance": 0.00015,
+      "voltage_rating": 500.0,
+      "esr": 0.008,
+      "esl": 1.2e-08,
+      "ripple_current_rating": 40.0
+    },
+    "output_capacitor": {
+      "capacitance": 0.0022,
+      "voltage_rating": 63.0,
+      "esr": 0.002,
+      "esl": 6e-09,
+      "ripple_current_rating": 70.0
+    },
+    "secondary_mosfets": {
+      "part_number": "IMZA120R007M2H",
+      "v_dss": 1200.0,
+      "i_d_continuous": 142.0,
+      "r_dson_25c": 0.0055,
+      "r_dson_25c_max": 0.007,
+      "r_dson_150c": 0.0075,
+      "r_dson_150c_max": 0.0095,
+      "q_g": 1.8e-07,
+      "q_gs": 4.8e-08,
+      "q_gd": 6.2e-08,
+      "v_gs_plateau": 4.5,
+      "capacitances": {
+        "c_iss_constant": null,
+        "c_oss_constant": null,
+        "c_rss_constant": null,
+        "capacitance_curve": [
+          [
+            10.0,
+            3.2e-09,
+            4.5e-10,
+            9.5e-11
+          ],
+          [
+            25.0,
+            3e-09,
+            2.8e-10,
+            5.8e-11
+          ],
+          [
+            50.0,
+            2.85e-09,
+            1.8e-10,
+            3.8e-11
+          ],
+          [
+            80.0,
+            2.75e-09,
+            1.3e-10,
+            2.8e-11
+          ]
+        ]
+      },
+      "t_r": 2.2e-08,
+      "t_f": 1.8e-08,
+      "v_sd": 2.0,
+      "q_rr": 1.8e-08,
+      "t_rr": 1.5e-08,
+      "r_th_jc": 0.35,
+      "t_j_max": 175.0,
+      "v_gs_drive": 18.0,
+      "r_g_internal": 1.2,
+      "r_g_external": 3.0
+    },
+    "secondary_diodes": null
+  },
+  "thermal": {
+    "t_ambient": 40.0,
+    "cooling_method": "forced_air",
+    "forced_air_cfm": 25.0,
+    "heatsink_r_th_ca": 1.8,
+    "thermal_interface_r_th": 0.12,
+    "target_t_j_max": 125.0
+  },
+  "operating_point": {
+    "load_percentage": 100.0,
+    "input_voltage": 300.0,
+    "output_current": 104.2,
+    "phase_shift_angle": 135.0,
+    "zvs_achieved_primary": true
+  }
+}

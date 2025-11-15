@@ -37,9 +37,14 @@ The input parameter interface is fully implemented and ready for use. The follow
 
 - ✅ Complete data class definitions (`circuit_params.py`)
 - ✅ Configuration loader with JSON support (`config_loader.py`)
-- ✅ Example 3kW marine PSFB design
+- ✅ **Magnetic core database** with TDK PQ, Ferroxcube ETD, EPCOS E cores (`core_database.py`)
+- ✅ **Three reference design examples:**
+  - 3kW Marine PSFB (48V→24V) with Wolfspeed C3M0065090J
+  - 5kW Telecom PSFB (300V→48V) with Infineon IMZA65R020M2H
+  - 3kW Fanless PSFB (380V→48V) with Infineon IMZA65R040M2H
 - ✅ CLI interface (`main.py`)
 - ✅ Configuration validation
+- ✅ **Comprehensive reference documentation** (`docs/REFERENCES.md`)
 
 **Next Phase: Loss Calculation Engine (PENDING)**
 
@@ -98,6 +103,107 @@ python main.py --config my_design.json --show-params
 
 ```bash
 python main.py --config my_design.json --validate-only
+```
+
+## Example Configurations
+
+Three reference designs are provided to demonstrate different use cases:
+
+### 1. 3kW Marine PSFB (Wolfspeed SiC)
+**File**: `examples/example_3kw_marine_psfb.py`
+
+- **Application**: Marine power systems
+- **Input**: 36-60V DC (48V nominal)
+- **Output**: 24V @ 125A (3000W)
+- **Primary**: Wolfspeed C3M0065090J (650V, 65mΩ SiC)
+- **Secondary**: TI CSD19538Q3A (100V, 1.8mΩ SR MOSFET)
+- **Transformer**: ETD59 with 3C95 ferrite
+- **Frequency**: 100 kHz
+- **Cooling**: Forced air (15 CFM)
+
+Run: `python examples/example_3kw_marine_psfb.py`
+
+### 2. 5kW Telecom PSFB (Infineon IMZA65R020M2H)
+**File**: `examples/example_5kw_infineon_20mohm.py`
+
+- **Application**: Telecom/Datacom power supplies, EV charging
+- **Input**: 200-400V DC (300V nominal, high-voltage DC link)
+- **Output**: 48V @ 104A (5000W)
+- **Primary**: Infineon IMZA65R020M2H (650V, 20mΩ CoolSiC™)
+- **Secondary**: Infineon IMZA120R007M2H (1200V, 7mΩ SiC SR)
+- **Transformer**: TDK PQ80/60 with PC95 ferrite
+- **Frequency**: 150 kHz (high frequency enabled by SiC)
+- **Cooling**: Forced air (25 CFM)
+- **Key Feature**: Ultra-low RDS(on) for high efficiency at high voltage
+
+Run: `python examples/example_5kw_infineon_20mohm.py`
+
+### 3. 3kW Fanless PSFB (Infineon IMZA65R040M2H)
+**File**: `examples/example_3kw_infineon_40mohm.py`
+
+- **Application**: Industrial equipment, renewable energy, fanless operation
+- **Input**: 300-450V DC (380V nominal)
+- **Output**: 48V @ 62.5A (3000W)
+- **Primary**: Infineon IMZA65R040M2H (650V, 40mΩ CoolSiC™)
+- **Secondary**: TI CSD19536KTT (100V, 3.9mΩ Si SR MOSFET)
+- **Transformer**: Ferroxcube ETD59 with 3C95 ferrite
+- **Frequency**: 120 kHz (moderate for natural convection)
+- **Cooling**: **Natural convection only (fanless)**
+- **Key Feature**: Cost-optimized design with SiC primary, Si secondary
+
+Run: `python examples/example_3kw_infineon_40mohm.py`
+
+### Comparison of Examples
+
+| Parameter | Marine 3kW | Telecom 5kW | Fanless 3kW |
+|-----------|------------|-------------|-------------|
+| **Input Voltage** | 48V | 300V | 380V |
+| **Power Level** | 3kW | 5kW | 3kW |
+| **Primary Tech** | SiC (Wolfspeed) | SiC (Infineon 20mΩ) | SiC (Infineon 40mΩ) |
+| **Secondary Tech** | Si SR | SiC SR | Si SR |
+| **Frequency** | 100 kHz | 150 kHz | 120 kHz |
+| **Transformer Core** | ETD59 | PQ80/60 | ETD59 |
+| **Cooling** | Forced Air | Forced Air | Natural Convection |
+| **Target Application** | Low voltage, high current | High voltage, high power | Fanless, industrial |
+
+## Magnetic Core Database
+
+A comprehensive database of transformer cores is included in `core_database.py`:
+
+### TDK PQ Cores (Large Power)
+- **PQ 60/42**: 630mm² Ae, suitable for 3-5kW
+- **PQ 65/50**: 842mm² Ae, suitable for 4-6kW
+- **PQ 80/60**: 1230mm² Ae, suitable for 5-8kW
+- **PQ 107/87**: 2210mm² Ae, suitable for 8-12kW
+
+### Ferroxcube ETD Cores
+- **ETD39 through ETD59**: Complete range for 1-7kW
+
+### EPCOS E Cores
+- **E 42/21/20 through E 65/32/27**: Standard E-core range
+
+### Core Loss Coefficients (Steinmetz)
+Pre-calculated coefficients for:
+- **Ferroxcube 3C95** (25-200kHz optimal)
+- **Ferroxcube 3F3** (100-500kHz optimal)
+- **EPCOS N87** (25-200kHz optimal)
+- **EPCOS N97** (100-500kHz optimal, lower loss)
+- **Nanocrystalline** (>200kHz, very low loss)
+
+Temperature-dependent coefficients provided at 25°C, 60°C, 100°C, and 120°C with automatic interpolation.
+
+**Usage**:
+```python
+from core_database import get_core_geometry, get_core_loss_coefficients, list_available_cores
+
+# Get specific core
+core = get_core_geometry("PQ80/60")
+
+# Get loss coefficients at operating temperature
+coeffs = get_core_loss_coefficients(CoreMaterial.FERRITE_3C95, temperature=85.0)
+
+# List cores suitable for power range
+cores = list_available_cores(min_power_kw=3.0, max_power_kw=5.0)
 ```
 
 ## Input Parameter Interface
@@ -475,21 +581,40 @@ where:
 
 ```
 psfb_loss_analyzer/
+├── __init__.py                 # Package interface ✓
 ├── circuit_params.py           # Data class definitions ✓
 ├── config_loader.py            # JSON configuration loader ✓
+├── core_database.py            # Magnetic core database ✓
 ├── main.py                     # CLI interface ✓
-├── mosfet_losses.py           # MOSFET loss calculations (TODO)
-├── transformer_losses.py      # Magnetic losses (TODO)
-├── diode_losses.py           # Rectifier losses (TODO)
-├── thermal_solver.py         # Thermal iteration (TODO)
-├── efficiency_mapper.py      # Efficiency analysis (TODO)
-├── optimizer.py              # Design optimization (TODO)
-├── report_generator.py       # Results output (TODO)
+├── requirements.txt            # Python dependencies ✓
+├── README.md                   # Main documentation ✓
+│
+├── docs/
+│   └── REFERENCES.md           # Reference materials catalog ✓
+│
+├── PDFs/
+│   └── README.md               # PDF library documentation ✓
+│   # Place reference PDFs here (see docs/REFERENCES.md)
+│
 ├── examples/
-│   ├── example_3kw_marine_psfb.py      ✓
-│   └── 3kw_marine_psfb_config.json     ✓
-├── tests/                    # Unit tests (TODO)
-└── README.md                 # This file ✓
+│   ├── example_3kw_marine_psfb.py           # 3kW Marine (48V→24V) ✓
+│   ├── example_5kw_infineon_20mohm.py       # 5kW Telecom (300V→48V) ✓
+│   ├── example_3kw_infineon_40mohm.py       # 3kW Fanless (380V→48V) ✓
+│   ├── 3kw_marine_psfb_config.json          # Exported config ✓
+│   ├── 5kw_infineon_20mohm_config.json      # Exported config ✓
+│   ├── 3kw_infineon_40mohm_config.json      # Exported config ✓
+│   └── template.json                         # Configuration template ✓
+│
+├── tests/                      # Unit tests (TODO)
+│
+└── [Future Loss Calculation Modules]
+    ├── mosfet_losses.py        # MOSFET loss calculations (TODO)
+    ├── transformer_losses.py   # Magnetic losses (TODO)
+    ├── diode_losses.py         # Rectifier losses (TODO)
+    ├── thermal_solver.py       # Thermal iteration (TODO)
+    ├── efficiency_mapper.py    # Efficiency analysis (TODO)
+    ├── optimizer.py            # Design optimization (TODO)
+    └── report_generator.py     # Results output (TODO)
 ```
 
 ## API Reference
@@ -522,6 +647,63 @@ r_g_tot = mosfet.r_g_total  # Total gate resistance
 c_oss = mosfet.capacitances.get_coss(vds=100.0)  # Coss @ 100V
 ```
 
+## Reference Materials
+
+This project is built upon industry-standard methodologies and validated designs. Comprehensive reference documentation is provided in `docs/REFERENCES.md`.
+
+### Required Reference Documents
+
+Place the following PDFs in `psfb_loss_analyzer/PDFs/` directory:
+
+#### Core Methodology (Essential)
+- **Infineon "MOSFET Power Losses Calculation Using the DataSheet Parameters" (2006)**
+  - PRIMARY reference for all MOSFET loss calculations
+  - Implements temperature-dependent RDS(on), switching energies, Miller time calculation
+
+#### PSFB Topology References
+- **Texas Instruments "UCC28950, UCC28951 - Phase-Shifted Full-Bridge Controller"**
+  - PSFB design equations, dead time calculation, phase shift modulation
+- **"Implementation of a PSFB DC-DC ZVS converter" - Assel Zhaksvlvk Thesis (2019)**
+  - Detailed ZVS analysis and experimental validation
+- **Microchip "Phase-Shifted Full-Bridge Quarter Brick DC-DC Converter Reference Design"**
+  - Complete design example with measured efficiency data
+
+#### Power Electronics Textbooks
+- **"Fundamentals of Power Electronics" 3rd Edition (2020)** - Erickson & Maksimovic
+  - Chapter 13: Soft Switching (ZVS principles)
+  - Chapter 14: Magnetics Design
+- **"Transformer and Inductor Design Handbook" 4th Edition (2011)** - Colonel Wm. T. McLyman
+  - Core loss calculation (Steinmetz equation)
+  - Winding AC resistance (Dowell method)
+  - Thermal design
+
+#### Component Datasheets
+- **Infineon IMZA65R020M2H** (650V, 20mΩ CoolSiC™ MOSFET)
+- **Infineon IMZA65R040M2H** (650V, 40mΩ CoolSiC™ MOSFET)
+- **TDK "Large PQ series TDK PQ60x42 to PQ107x87x70"** (Transformer cores)
+
+### Reference Documentation Structure
+
+**`docs/REFERENCES.md`** provides:
+- Detailed description of each reference material
+- Specific equations and page numbers
+- Parameter extraction procedures from datasheets
+- Implementation mapping to code modules
+- Quick reference tables for key formulas
+
+**`PDFs/README.md`** lists all expected PDF files and copyright information.
+
+### Using the References
+
+The references are organized by implementation phase:
+
+1. **For MOSFET Loss Implementation** → Infineon AN + MOSFET datasheets
+2. **For Transformer Design** → McLyman Handbook + Core datasheets
+3. **For PSFB Topology** → UCC28951 datasheet + Zhaksvlvk thesis
+4. **For Validation** → Microchip reference design + measured data
+
+See `docs/REFERENCES.md` for reading order and specific sections to reference.
+
 ## Contributing
 
 This project is currently in development. The input parameter interface is complete. Contributions to the loss calculation engine are welcome!
@@ -529,6 +711,7 @@ This project is currently in development. The input parameter interface is compl
 ### Development Roadmap
 
 - [x] Phase 1: Input parameter interface
+- [x] Phase 1.5: Core database and reference examples
 - [ ] Phase 2: Loss calculation engine
 - [ ] Phase 3: Thermal solver
 - [ ] Phase 4: Efficiency mapping
@@ -538,10 +721,26 @@ This project is currently in development. The input parameter interface is compl
 
 ## References
 
-1. Infineon Application Note: "MOSFET Power Losses Calculation Using the Data Sheet Parameters"
-2. Dowell, P.L.: "Effects of Eddy Currents in Transformer Windings"
-3. Steinmetz, C.P.: "On the Law of Hysteresis"
-4. Erickson & Maksimovic: "Fundamentals of Power Electronics"
+### Primary Methodology
+1. **Infineon Application Note**: "MOSFET Power Losses Calculation Using the Data Sheet Parameters" (2006)
+2. **McLyman, Colonel Wm. T.**: "Transformer and Inductor Design Handbook" 4th Edition (2011)
+3. **Erickson & Maksimovic**: "Fundamentals of Power Electronics" 3rd Edition (2020)
+
+### PSFB Topology
+4. **Texas Instruments**: "UCC28950, UCC28951 - Phase-Shifted Full-Bridge Controller" Datasheet
+5. **Zhaksvlvk, Assel**: "Implementation of a PSFB DC-DC ZVS converter with Peak Current Mode Control" Master's Thesis (2019)
+6. **Microchip**: "Phase-Shifted Full-Bridge (PSFB) Quarter Brick DC-DC Converter Reference Design"
+
+### Fundamental Theory
+7. **Dowell, P.L.**: "Effects of Eddy Currents in Transformer Windings" (1966)
+8. **Steinmetz, C.P.**: "On the Law of Hysteresis" (1984)
+
+### Component Datasheets
+9. **Infineon**: IMZA65R020M2H, IMZA65R040M2H CoolSiC™ MOSFET Datasheets
+10. **TDK**: Large PQ Series Ferrite Core Catalog
+11. **Ferroxcube**: Soft Ferrite Material Specifications (3C95, 3F3)
+
+**For detailed reference information, parameter extraction guides, and implementation mapping, see `docs/REFERENCES.md`.**
 
 ## License
 

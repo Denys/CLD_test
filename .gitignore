@@ -50,5 +50,10 @@ results/
 plots/
 reports/
 
+# Reference PDFs (copyrighted materials, obtain separately)
+*.pdf
+PDFs/
+!psfb_loss_analyzer/PDFs/README.md
+
 # Exception: Keep example JSON configs
 !psfb_loss_analyzer/examples/*.json
