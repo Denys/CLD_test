@@ -60,6 +60,18 @@ from .core_database import (
     list_available_cores,
 )
 
+from .diode_losses import (
+    DiodeCurrentWaveform,
+    DiodeLosses,
+    calculate_forward_voltage,
+    calculate_forward_conduction_loss,
+    calculate_reverse_recovery_loss,
+    calculate_diode_losses,
+    estimate_fullbridge_diode_waveform,
+    estimate_centertap_diode_waveform,
+    verify_diode_ratings,
+)
+
 __all__ = [
     # Main configuration
     'PSFBConfiguration',
@@ -113,4 +125,15 @@ __all__ = [
     'get_core_geometry',
     'get_core_loss_coefficients',
     'list_available_cores',
+
+    # Diode loss calculations
+    'DiodeCurrentWaveform',
+    'DiodeLosses',
+    'calculate_forward_voltage',
+    'calculate_forward_conduction_loss',
+    'calculate_reverse_recovery_loss',
+    'calculate_diode_losses',
+    'estimate_fullbridge_diode_waveform',
+    'estimate_centertap_diode_waveform',
+    'verify_diode_ratings',
 ]

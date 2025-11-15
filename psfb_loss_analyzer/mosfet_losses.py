@@ -24,7 +24,7 @@ Author: PSFB Loss Analysis Tool
 import numpy as np
 from dataclasses import dataclass
 from typing import Optional, Tuple
-from circuit_params import MOSFETParameters
+from .circuit_params import MOSFETParameters
 
 
 @dataclass
@@ -539,7 +539,10 @@ def estimate_psfb_primary_waveform(
 # =============================================================================
 
 if __name__ == "__main__":
-    from circuit_params import MOSFETParameters, CapacitanceVsVoltage
+    try:
+        from circuit_params import MOSFETParameters, CapacitanceVsVoltage
+    except ImportError:
+        from .circuit_params import MOSFETParameters, CapacitanceVsVoltage
 
     print("="*70)
     print("MOSFET LOSS CALCULATION - EXAMPLE")

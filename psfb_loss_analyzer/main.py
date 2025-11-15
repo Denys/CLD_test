@@ -16,8 +16,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from circuit_params import PSFBConfiguration, validate_configuration
-from config_loader import ConfigurationLoader
+from .circuit_params import PSFBConfiguration, validate_configuration
+from .config_loader import ConfigurationLoader
 
 
 def print_banner():
