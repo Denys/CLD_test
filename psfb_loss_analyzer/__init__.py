@@ -6,10 +6,10 @@ converters, implementing the methodology from Infineon's "MOSFET Power Losses
 Calculation Using the DataSheet Parameters" application note.
 
 Author: PSFB Loss Analysis Tool
-Version: 0.3.0 (Magnetic Component Design Implemented)
+Version: 0.4.0 (System Integration & Efficiency Mapping)
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __author__ = "PSFB Loss Analysis Tool"
 
 # Import main classes for easy access
@@ -129,6 +129,19 @@ from .system_analyzer import (
     print_system_loss_report,
 )
 
+from .efficiency_mapper import (
+    EfficiencyPoint,
+    EfficiencyCurve,
+    EfficiencyMap,
+    sweep_efficiency_vs_load,
+    generate_efficiency_map,
+    calculate_cec_efficiency,
+    calculate_european_efficiency,
+    export_efficiency_curve_csv,
+    export_efficiency_map_csv,
+    print_efficiency_summary,
+)
+
 __all__ = [
     # Main configuration
     'PSFBConfiguration',
@@ -245,4 +258,16 @@ __all__ = [
     'analyze_psfb_phase',
     'analyze_psfb_system',
     'print_system_loss_report',
+
+    # Efficiency mapping and characterization
+    'EfficiencyPoint',
+    'EfficiencyCurve',
+    'EfficiencyMap',
+    'sweep_efficiency_vs_load',
+    'generate_efficiency_map',
+    'calculate_cec_efficiency',
+    'calculate_european_efficiency',
+    'export_efficiency_curve_csv',
+    'export_efficiency_map_csv',
+    'print_efficiency_summary',
 ]
