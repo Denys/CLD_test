@@ -6,10 +6,10 @@ converters, implementing the methodology from Infineon's "MOSFET Power Losses
 Calculation Using the DataSheet Parameters" application note.
 
 Author: PSFB Loss Analysis Tool
-Version: 0.3.0 (Magnetic Component Design Implemented)
+Version: 0.5.0 (Automated Design & Optimization)
 """
 
-__version__ = "0.3.0"
+__version__ = "0.5.0"
 __author__ = "PSFB Loss Analysis Tool"
 
 # Import main classes for easy access
@@ -129,6 +129,47 @@ from .system_analyzer import (
     print_system_loss_report,
 )
 
+from .efficiency_mapper import (
+    EfficiencyPoint,
+    EfficiencyCurve,
+    EfficiencyMap,
+    sweep_efficiency_vs_load,
+    generate_efficiency_map,
+    calculate_cec_efficiency,
+    calculate_european_efficiency,
+    export_efficiency_curve_csv,
+    export_efficiency_map_csv,
+    print_efficiency_summary,
+)
+
+from .component_library import (
+    DeviceType,
+    ComponentMetrics,
+    MOSFET_LIBRARY_SIC,
+    MOSFET_LIBRARY_SI,
+    DIODE_LIBRARY_SIC,
+    DIODE_LIBRARY_SI,
+    CAPACITOR_LIBRARY_INPUT,
+    CAPACITOR_LIBRARY_OUTPUT,
+    get_all_mosfets,
+    get_all_diodes,
+    filter_mosfets_by_rating,
+    filter_diodes_by_rating,
+)
+
+from .optimizer import (
+    DesignSpecification,
+    DesignCandidate,
+    OptimizationResult,
+    ObjectiveFunction,
+    generate_design_space,
+    evaluate_design,
+    is_pareto_dominated,
+    find_pareto_frontier,
+    optimize_design,
+    print_optimization_summary,
+)
+
 __all__ = [
     # Main configuration
     'PSFBConfiguration',
@@ -245,4 +286,42 @@ __all__ = [
     'analyze_psfb_phase',
     'analyze_psfb_system',
     'print_system_loss_report',
+
+    # Efficiency mapping and characterization
+    'EfficiencyPoint',
+    'EfficiencyCurve',
+    'EfficiencyMap',
+    'sweep_efficiency_vs_load',
+    'generate_efficiency_map',
+    'calculate_cec_efficiency',
+    'calculate_european_efficiency',
+    'export_efficiency_curve_csv',
+    'export_efficiency_map_csv',
+    'print_efficiency_summary',
+
+    # Component library
+    'DeviceType',
+    'ComponentMetrics',
+    'MOSFET_LIBRARY_SIC',
+    'MOSFET_LIBRARY_SI',
+    'DIODE_LIBRARY_SIC',
+    'DIODE_LIBRARY_SI',
+    'CAPACITOR_LIBRARY_INPUT',
+    'CAPACITOR_LIBRARY_OUTPUT',
+    'get_all_mosfets',
+    'get_all_diodes',
+    'filter_mosfets_by_rating',
+    'filter_diodes_by_rating',
+
+    # Automated design and optimization
+    'DesignSpecification',
+    'DesignCandidate',
+    'OptimizationResult',
+    'ObjectiveFunction',
+    'generate_design_space',
+    'evaluate_design',
+    'is_pareto_dominated',
+    'find_pareto_frontier',
+    'optimize_design',
+    'print_optimization_summary',
 ]
