@@ -11,7 +11,7 @@ import json
 from typing import Optional, List, Tuple
 from pathlib import Path
 
-from circuit_params import (
+from .circuit_params import (
     PSFBConfiguration,
     CircuitTopology,
     VoltageRange,

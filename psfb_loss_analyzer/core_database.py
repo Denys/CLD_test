@@ -12,7 +12,7 @@ References:
 Author: PSFB Loss Analysis Tool
 """
 
-from circuit_params import CoreGeometry, CoreLossCoefficients, CoreMaterial
+from .circuit_params import CoreGeometry, CoreLossCoefficients, CoreMaterial
 from typing import Dict, Optional
 
 
