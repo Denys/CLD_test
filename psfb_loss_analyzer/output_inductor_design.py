@@ -82,17 +82,17 @@ except ImportError:
 @dataclass
 class OutputInductorSpec:
     """Output inductor design specification"""
-    # Output voltage and current
+    # Required parameters
     vout_nom: float  # Nominal output voltage (V)
     iout_nom: float  # Nominal output current (A)
     iout_max: float  # Maximum output current (A)
+    frequency: float  # Switching frequency (Hz)
 
-    # Ripple requirements
+    # Optional ripple requirements
     current_ripple_percent: float = 30.0  # Current ripple as % of nominal (20-40% typical)
     current_ripple_pp_max: Optional[float] = None  # Maximum peak-to-peak ripple (A)
 
-    # Operating conditions
-    frequency: float  # Switching frequency (Hz)
+    # Optional operating conditions
     duty_cycle_nom: float = 0.45  # Nominal duty cycle
 
     # Multi-phase interleaving

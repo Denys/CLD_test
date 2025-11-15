@@ -116,6 +116,19 @@ from .output_inductor_design import (
     design_output_inductor,
 )
 
+from .system_analyzer import (
+    CapacitorLosses,
+    PhaseLosses,
+    SystemLosses,
+    MagneticComponents,
+    calculate_capacitor_esr_loss,
+    estimate_input_capacitor_current,
+    estimate_output_capacitor_current,
+    analyze_psfb_phase,
+    analyze_psfb_system,
+    print_system_loss_report,
+)
+
 __all__ = [
     # Main configuration
     'PSFBConfiguration',
@@ -220,4 +233,16 @@ __all__ = [
     'calculate_inductor_current_stress',
     'calculate_core_loss_with_dc_bias',
     'design_output_inductor',
+
+    # System integration and analysis
+    'CapacitorLosses',
+    'PhaseLosses',
+    'SystemLosses',
+    'MagneticComponents',
+    'calculate_capacitor_esr_loss',
+    'estimate_input_capacitor_current',
+    'estimate_output_capacitor_current',
+    'analyze_psfb_phase',
+    'analyze_psfb_system',
+    'print_system_loss_report',
 ]

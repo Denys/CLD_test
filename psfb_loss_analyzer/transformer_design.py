@@ -81,19 +81,23 @@ except ImportError:
 @dataclass
 class TransformerSpec:
     """Transformer design specification"""
-    # Voltage requirements
+    # Required voltage parameters
     vin_min: float  # Minimum input voltage (V)
     vin_nom: float  # Nominal input voltage (V)
     vin_max: float  # Maximum input voltage (V)
     vout_nom: float  # Nominal output voltage (V)
+
+    # Required power and frequency
+    power_output: float  # Output power per phase (W)
+    frequency: float  # Switching frequency (Hz)
+
+    # Optional voltage regulation
     vout_regulation: float = 0.05  # Output voltage regulation (5%)
 
-    # Power requirements
-    power_output: float  # Output power per phase (W)
+    # Optional efficiency target
     efficiency_target: float = 0.96  # Target efficiency (96%)
 
-    # Operating conditions
-    frequency: float  # Switching frequency (Hz)
+    # Optional operating conditions
     duty_cycle_nom: float = 0.45  # Nominal duty cycle (0.45 max for PSFB)
     duty_cycle_min: float = 0.1  # Minimum duty cycle
     duty_cycle_max: float = 0.48  # Maximum duty cycle (leave margin for dead time)

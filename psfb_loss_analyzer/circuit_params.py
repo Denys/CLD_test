@@ -306,6 +306,43 @@ class CoreGeometry:
     window_area: float  # W_a (m²)
     b_sat: float = 0.4  # Tesla (typical for ferrite at 100°C)
 
+    # Compatibility aliases for magnetic design modules
+    @property
+    def core_area(self) -> float:
+        """Alias for effective_area (compatibility)"""
+        return self.effective_area
+
+    @property
+    def path_length(self) -> float:
+        """Alias for effective_length (compatibility)"""
+        return self.effective_length
+
+    @property
+    def volume(self) -> float:
+        """Alias for effective_volume (compatibility)"""
+        return self.effective_volume
+
+    @property
+    def mean_length_turn(self) -> float:
+        """
+        Estimate mean length per turn (MLT) from window area
+
+        MLT ≈ 2 × (window_height + window_width)
+        For square window: MLT ≈ 4 × √(window_area)
+        Add 10% for practical winding
+        """
+        import math
+        return 4.4 * math.sqrt(self.window_area)
+
+    @property
+    def surface_area(self) -> float:
+        """
+        Estimate surface area for thermal calculations
+
+        Rough approximation: surface_area ≈ 6 × (volume)^(2/3)
+        """
+        return 6.0 * (self.effective_volume ** (2.0/3.0))
+
 
 @dataclass
 class CoreLossCoefficients:

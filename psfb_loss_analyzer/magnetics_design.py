@@ -135,14 +135,17 @@ class WindingDesign:
 @dataclass
 class MagneticDesignResult:
     """Complete magnetic component design result"""
-    # Core selection
+    # Core selection (required fields)
     core_name: str
     core_geometry: CoreGeometry
     core_material: CoreMaterial
     core_loss_coefficients: CoreLossCoefficients
 
-    # Magnetic design
+    # Magnetic design (required fields)
     n_primary: int  # Primary turns (or total turns for inductor)
+    primary_winding: WindingDesign
+
+    # Optional fields with defaults
     n_secondary: Optional[int] = None  # Secondary turns (transformers only)
     turns_ratio: Optional[float] = None  # n = N_pri / N_sec
 
@@ -153,7 +156,6 @@ class MagneticDesignResult:
     inductance_leakage: Optional[float] = None  # Leakage inductance (H)
 
     # Winding designs
-    primary_winding: WindingDesign
     secondary_winding: Optional[WindingDesign] = None
 
     # Loss breakdown
