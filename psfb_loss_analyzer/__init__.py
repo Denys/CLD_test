@@ -6,10 +6,10 @@ converters, implementing the methodology from Infineon's "MOSFET Power Losses
 Calculation Using the DataSheet Parameters" application note.
 
 Author: PSFB Loss Analysis Tool
-Version: 0.1.0 (Input Interface Complete)
+Version: 0.2.0 (MOSFET Loss Calculations Implemented)
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "PSFB Loss Analysis Tool"
 
 # Import main classes for easy access
@@ -38,6 +38,26 @@ from .circuit_params import (
 from .config_loader import (
     ConfigurationLoader,
     load_configuration,
+)
+
+from .mosfet_losses import (
+    MOSFETCurrentWaveform,
+    MOSFETLosses,
+    calculate_rdson_at_temp,
+    calculate_conduction_loss,
+    calculate_miller_time,
+    calculate_switching_energy_hard,
+    calculate_switching_energy_zvs,
+    calculate_switching_loss,
+    calculate_gate_drive_loss,
+    calculate_mosfet_losses,
+    estimate_psfb_primary_waveform,
+)
+
+from .core_database import (
+    get_core_geometry,
+    get_core_loss_coefficients,
+    list_available_cores,
 )
 
 __all__ = [
@@ -75,4 +95,22 @@ __all__ = [
     # Configuration loading
     'ConfigurationLoader',
     'load_configuration',
+
+    # MOSFET loss calculations
+    'MOSFETCurrentWaveform',
+    'MOSFETLosses',
+    'calculate_rdson_at_temp',
+    'calculate_conduction_loss',
+    'calculate_miller_time',
+    'calculate_switching_energy_hard',
+    'calculate_switching_energy_zvs',
+    'calculate_switching_loss',
+    'calculate_gate_drive_loss',
+    'calculate_mosfet_losses',
+    'estimate_psfb_primary_waveform',
+
+    # Core database
+    'get_core_geometry',
+    'get_core_loss_coefficients',
+    'list_available_cores',
 ]
