@@ -1,0 +1,168 @@
+{
+  "project_name": "6.6kW Marine PSFB with SiC Diode Rectification (400V\u2192250V)",
+  "topology": {
+    "v_in": {
+      "min": 360.0,
+      "nominal": 400.0,
+      "max": 440.0
+    },
+    "v_out": 250.0,
+    "p_out": 6600.0,
+    "f_sw": 100000.0,
+    "phase_shift_min": 20.0,
+    "phase_shift_max": 160.0,
+    "n_phases": 1,
+    "dead_time_primary": 3e-07,
+    "dead_time_secondary": 0.0,
+    "transformer_turns_ratio": 0.533
+  },
+  "components": {
+    "primary_mosfets": {
+      "part_number": "IMZA65R020M2H",
+      "v_dss": 650.0,
+      "i_d_continuous": 90.0,
+      "r_dson_25c": 0.016,
+      "r_dson_25c_max": 0.02,
+      "r_dson_150c": 0.022,
+      "r_dson_150c_max": 0.028,
+      "q_g": 8.5e-08,
+      "q_gs": 2.5e-08,
+      "q_gd": 2.8e-08,
+      "v_gs_plateau": 4.8,
+      "capacitances": {
+        "c_iss_constant": null,
+        "c_oss_constant": null,
+        "c_rss_constant": null,
+        "capacitance_curve": [
+          [
+            25.0,
+            4.5e-09,
+            1.8e-10,
+            4.5e-11
+          ],
+          [
+            100.0,
+            4.2e-09,
+            9.5e-11,
+            2.2e-11
+          ],
+          [
+            200.0,
+            4e-09,
+            6e-11,
+            1.4e-11
+          ],
+          [
+            400.0,
+            3.9e-09,
+            4e-11,
+            9e-12
+          ],
+          [
+            600.0,
+            3.85e-09,
+            3e-11,
+            7e-12
+          ]
+        ]
+      },
+      "t_r": 1.8e-08,
+      "t_f": 1.4e-08,
+      "v_sd": 2.2,
+      "q_rr": 1.5e-08,
+      "t_rr": 1.2e-08,
+      "r_th_jc": 0.5,
+      "t_j_max": 175.0,
+      "v_gs_drive": 18.0,
+      "r_g_internal": 1.5,
+      "r_g_external": 5.0
+    },
+    "secondary_rectifier_type": "diode",
+    "transformer": {
+      "core_geometry": {
+        "core_type": "PQ107/87",
+        "effective_area": 0.00221,
+        "effective_length": 0.258,
+        "effective_volume": 0.00057,
+        "window_area": 0.00248,
+        "b_sat": 0.39
+      },
+      "core_material": "3C95",
+      "core_loss_coefficients": {
+        "k": 38.8,
+        "alpha": 1.63,
+        "beta": 2.62,
+        "temperature": 100.0
+      },
+      "primary_winding": {
+        "n_turns": 16,
+        "wire_diameter": 0.0015,
+        "wire_conductors": 120,
+        "dc_resistance": 0.0032,
+        "layers": 2,
+        "foil_winding": false
+      },
+      "secondary_winding": {
+        "n_turns": 30,
+        "wire_diameter": 0.002,
+        "wire_conductors": 60,
+        "dc_resistance": 0.0065,
+        "layers": 3,
+        "foil_winding": false
+      },
+      "leakage_inductance": 4.5e-06,
+      "magnetizing_inductance": 0.00065,
+      "isolation_capacitance": 2e-10
+    },
+    "output_inductor": {
+      "inductance": 4e-05,
+      "dc_resistance": 0.0018,
+      "ac_resistance_100khz": 0.0035,
+      "core_loss_density": 200000.0,
+      "core_volume": 3.5e-05,
+      "current_rating": 35.0,
+      "saturation_current": 45.0
+    },
+    "input_capacitor": {
+      "capacitance": 0.0002,
+      "voltage_rating": 500.0,
+      "esr": 0.006,
+      "esl": 1e-08,
+      "ripple_current_rating": 50.0
+    },
+    "output_capacitor": {
+      "capacitance": 0.0005,
+      "voltage_rating": 350.0,
+      "esr": 0.008,
+      "esl": 1.2e-08,
+      "ripple_current_rating": 40.0
+    },
+    "secondary_mosfets": null,
+    "secondary_diodes": {
+      "part_number": "C4D30120A",
+      "v_rrm": 1200.0,
+      "i_f_avg": 31.0,
+      "v_f0": 0.0,
+      "r_d": 0.035,
+      "q_rr": 0.0,
+      "t_rr": 0.0,
+      "r_th_jc": 1.2,
+      "t_j_max": 175.0
+    }
+  },
+  "thermal": {
+    "t_ambient": 50.0,
+    "cooling_method": "forced_air",
+    "forced_air_cfm": 30.0,
+    "heatsink_r_th_ca": 1.5,
+    "thermal_interface_r_th": 0.1,
+    "target_t_j_max": 125.0
+  },
+  "operating_point": {
+    "load_percentage": 100.0,
+    "input_voltage": 400.0,
+    "output_current": 26.4,
+    "phase_shift_angle": 140.0,
+    "zvs_achieved_primary": true
+  }
+}
