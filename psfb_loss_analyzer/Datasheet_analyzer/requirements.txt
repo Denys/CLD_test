@@ -1,0 +1,13 @@
+# Datasheet Analyzer Dependencies
+
+# Core dependencies (required)
+pdfplumber>=0.9.0        # PDF text and table extraction
+PyPDF2>=3.0.0            # Fallback PDF reader
+pandas>=1.5.0            # DataFrame operations and CSV export
+
+# Optional dependencies
+# pytesseract>=0.3.10    # OCR for scanned PDFs (requires tesseract-ocr system package)
+# opencv-python>=4.8.0   # Image processing for graph extraction
+# pillow>=10.0.0         # Image manipulation
+# scipy>=1.10.0          # Curve fitting for parameter models
+# matplotlib>=3.7.0      # Graph visualization
