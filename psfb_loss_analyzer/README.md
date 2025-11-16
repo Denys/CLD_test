@@ -48,20 +48,53 @@ This tool provides complete power loss analysis, magnetic design, efficiency map
   - Batch processing and comparison
   - Component library generation
 
+- **✅ Graphical User Interface (NEW!)**
+  - Complete 7-tab web-based GUI using Gradio
+  - MOSFET and diode loss analysis with component library
+  - Drag & drop PDF datasheet parser
+  - Multi-phase system analyzer
+  - Interactive magnetic design (transformer + inductors)
+  - Automated optimization with Pareto frontier visualization
+  - Real-time calculations and interactive plots
+
 - **⚙️ Advanced Features (Planned)**
   - Thermal iteration solver (manual junction temp currently)
   - Automated report generation with plots
   - Sensitivity analysis
   - Monte Carlo tolerance analysis
 
+## Graphical User Interface
+
+**NEW in v1.0.0!** Complete web-based GUI for interactive analysis and design.
+
+### Launch GUI
+
+```bash
+python psfb_gui.py
+# Opens browser to http://localhost:7860
+```
+
+### GUI Features (7 Tabs)
+
+1. **MOSFET Loss Analysis** - Component library, loss calculations, visualizations
+2. **Diode Loss Analysis** - SiC/Si comparison, loss breakdown
+3. **Datasheet Parser** - Drag & drop PDF extraction, auto-parameter detection
+4. **System Analysis** - Multi-phase PSFB system analyzer (1-4 phases)
+5. **Magnetic Design** - Transformer and inductor design with loss calculation
+6. **Optimizer** - Automated design with Pareto frontier
+7. **About** - Documentation and references
+
+See **[GUI_README.md](../GUI_README.md)** for complete GUI user guide with examples and workflows.
+
 ## Project Status
 
-**Current Version: 0.5.0 - Automated Design & Optimization** ✅
+**Current Version: 1.0.0 - Complete GUI Interface** ✅
 
 ### Implemented Modules ✅
 
 | Module | Status | Description |
 |--------|--------|-------------|
+| `psfb_gui.py` | ✅ **NEW!** | **7-tab web GUI with Gradio** |
 | `circuit_params.py` | ✅ Complete | Data class definitions for all components |
 | `mosfet_losses.py` | ✅ Complete | MOSFET conduction, switching, gate drive losses |
 | `diode_losses.py` | ✅ Complete | Diode conduction and reverse recovery losses |
@@ -387,6 +420,7 @@ See **[REFERENCES.md](docs/REFERENCES.md)** for complete methodology documentati
 - [x] **Phase 4:** System integration & efficiency mapping ✅
 - [x] **Phase 5:** Automated design optimization ✅
 - [x] **Phase 6:** Datasheet parameter extraction ✅
+- [x] **Phase 6.5:** Graphical user interface ✅ **NEW!**
 - [ ] **Phase 7:** Thermal iteration solver ⚙️
 - [ ] **Phase 8:** Report generation ⚙️
 - [ ] **Phase 9:** Validation against experimental data ⚙️
