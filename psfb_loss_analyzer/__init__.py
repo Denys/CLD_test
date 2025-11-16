@@ -170,6 +170,21 @@ from .optimizer import (
     print_optimization_summary,
 )
 
+from .ucc28951_design import (
+    CompensationType,
+    UCC28951Specification,
+    UCC28951ComponentValues,
+    PowerStageTransferFunction,
+    calculate_power_stage_tf,
+    calculate_timing_components,
+    calculate_voltage_sensing,
+    calculate_current_sensing,
+    design_type3_compensation,
+    calculate_soft_start_capacitor,
+    design_ucc28951_components,
+    create_spec_from_transformer_design,
+)
+
 __all__ = [
     # Main configuration
     'PSFBConfiguration',
@@ -324,4 +339,18 @@ __all__ = [
     'find_pareto_frontier',
     'optimize_design',
     'print_optimization_summary',
+
+    # UCC28951 controller design
+    'CompensationType',
+    'UCC28951Specification',
+    'UCC28951ComponentValues',
+    'PowerStageTransferFunction',
+    'calculate_power_stage_tf',
+    'calculate_timing_components',
+    'calculate_voltage_sensing',
+    'calculate_current_sensing',
+    'design_type3_compensation',
+    'calculate_soft_start_capacitor',
+    'design_ucc28951_components',
+    'create_spec_from_transformer_design',
 ]
