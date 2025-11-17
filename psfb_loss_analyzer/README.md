@@ -72,7 +72,19 @@ cd psfb_loss_analyzer
 
 ## Quick Start
 
-### 1. Run with Example Configuration
+### 1. Run GUI Application
+
+```bash
+python psfb_gui.py
+```
+
+The GUI provides a comprehensive interface for:
+- **UCC28951 Controller Design**: Automatic component calculation, Bode plots, and BOM generation
+- **Loss Analysis**: (Coming soon) Complete power loss analysis
+- **Thermal Analysis**: (Coming soon) Junction temperature modeling
+- **Optimization**: (Coming soon) Design parameter optimization
+
+### 2. Run with Example Configuration (CLI)
 
 ```bash
 python main.py --example --show-params
@@ -80,7 +92,7 @@ python main.py --example --show-params
 
 This loads a pre-configured 3kW marine PSFB converter (48V→24V) and displays all parameters.
 
-### 2. Export Configuration Template
+### 3. Export Configuration Template (CLI)
 
 ```bash
 python main.py --export-template my_design.json
@@ -88,17 +100,58 @@ python main.py --export-template my_design.json
 
 Edit the exported JSON file with your design parameters.
 
-### 3. Analyze Your Design
+### 4. Analyze Your Design (CLI)
 
 ```bash
 python main.py --config my_design.json --show-params
 ```
 
-### 4. Validate Configuration Only
+### 5. Validate Configuration Only (CLI)
 
 ```bash
 python main.py --config my_design.json --validate-only
 ```
+
+## GUI Application
+
+### UCC28951 Controller Design Tab
+
+The GUI includes a comprehensive UCC28951 Phase-Shifted Full-Bridge Controller design tool.
+
+**Features:**
+- **Input Fields**: Power stage specifications (voltages, power, frequency, transformer)
+- **Real-Time Calculation**: Automatic component value calculation
+- **Bode Plot Visualization**: Loop stability analysis with phase/gain margins
+- **BOM Export**: Generate bill of materials in CSV format
+
+**Usage:**
+1. Launch GUI: `python psfb_gui.py`
+2. Navigate to "UCC28951 Controller" tab
+3. Enter power stage specifications:
+   - Input voltage range (min/nom/max)
+   - Output voltage and power
+   - Switching frequency and dead time
+   - Transformer turns ratio and inductances
+4. Select control mode (Voltage Mode or Peak Current Mode)
+5. Click "Calculate Components" to design controller
+6. View results in three tabs:
+   - **Component Values**: Calculated resistor/capacitor values with explanations
+   - **Bode Plot**: Loop gain and phase response with stability margins
+   - **Bill of Materials**: Complete component list for ordering
+
+**Component Calculations:**
+- **Timing Components (RT, CT)**: Set oscillator frequency
+- **Soft-Start (CSS)**: Set startup time (default 10ms)
+- **Adaptive Delay (RADS)**: Optimize ZVS transitions
+- **Feedback Divider**: Set output voltage regulation
+- **Compensation Network**: Type II loop compensation with automatic zero/pole placement
+- **UVLO Divider**: Set input undervoltage lockout threshold
+- **Current Sense (RCS)**: For peak current mode control
+
+**BOM Export:**
+- Click "Export BOM" to save complete bill of materials
+- CSV format compatible with most BOM management tools
+- Includes designator, value, description, and package size
 
 ## Input Parameter Interface
 
@@ -475,21 +528,26 @@ where:
 
 ```
 psfb_loss_analyzer/
-├── circuit_params.py           # Data class definitions ✓
-├── config_loader.py            # JSON configuration loader ✓
-├── main.py                     # CLI interface ✓
-├── mosfet_losses.py           # MOSFET loss calculations (TODO)
-├── transformer_losses.py      # Magnetic losses (TODO)
-├── diode_losses.py           # Rectifier losses (TODO)
-├── thermal_solver.py         # Thermal iteration (TODO)
-├── efficiency_mapper.py      # Efficiency analysis (TODO)
-├── optimizer.py              # Design optimization (TODO)
-├── report_generator.py       # Results output (TODO)
+├── circuit_params.py                    # Data class definitions ✓
+├── config_loader.py                     # JSON configuration loader ✓
+├── main.py                              # CLI interface ✓
+├── psfb_gui.py                          # GUI application ✓
+├── ucc28951_controller.py               # UCC28951 controller design ✓
+├── mosfet_losses.py                    # MOSFET loss calculations (TODO)
+├── transformer_losses.py               # Magnetic losses (TODO)
+├── diode_losses.py                     # Rectifier losses (TODO)
+├── thermal_solver.py                   # Thermal iteration (TODO)
+├── efficiency_mapper.py                # Efficiency analysis (TODO)
+├── optimizer.py                        # Design optimization (TODO)
+├── report_generator.py                 # Results output (TODO)
 ├── examples/
-│   ├── example_3kw_marine_psfb.py      ✓
-│   └── 3kw_marine_psfb_config.json     ✓
-├── tests/                    # Unit tests (TODO)
-└── README.md                 # This file ✓
+│   ├── example_3kw_marine_psfb.py                 ✓
+│   ├── example_2_2kw_marine_psfb_diode.py         ✓
+│   ├── 3kw_marine_psfb_config.json                ✓
+│   └── 2_2kw_marine_psfb_diode_config.json        ✓
+├── tests/                              # Unit tests (TODO)
+├── requirements.txt                    # Python dependencies ✓
+└── README.md                           # This file ✓
 ```
 
 ## API Reference
