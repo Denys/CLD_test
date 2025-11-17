@@ -22,7 +22,7 @@ If running in WSL2, the browser will open in Windows and connect to the WSL2 ser
 
 ## GUI Overview
 
-The interface consists of 7 tabs providing complete access to all PSFB Loss Analyzer features:
+The interface consists of 8 tabs providing complete access to all PSFB Loss Analyzer features:
 
 ### Tab 1: MOSFET Loss Analysis
 
@@ -323,7 +323,123 @@ The Pareto frontier shows the trade-off between efficiency and cost. Designs on 
 
 ---
 
-### Tab 7: About
+### Tab 7: UCC28951 Controller Design ⭐ NEW!
+
+Design TI UCC28951/UCC28950 controller components and compensation loop.
+
+**Purpose:** Calculate all external components for the UCC28951 phase-shifted full-bridge controller with automatic Type III compensation network design.
+
+**Features:**
+- Power stage transfer function analysis
+- Type III compensation network design
+- Real-time loop stability analysis
+- **Bode plot visualization** (magnitude + phase)
+- Complete BOM with component specs and tolerances
+- Design target validation
+
+**Workflow:**
+1. Enter power stage parameters:
+   - Input/output voltages
+   - Maximum output current
+   - Turns ratio (from transformer design)
+   - Output filter (L, C, ESR)
+2. Set switching frequency
+3. Choose design targets:
+   - Target crossover frequency (1-10 kHz)
+   - Target phase margin (30-80°)
+4. Click **"Design Controller"**
+5. View Bode plot and component values
+
+**Input Parameters:**
+
+*Power Stage:*
+- V_in range (min/nom/max)
+- V_out
+- I_out max
+- Turns ratio (from Tab 5)
+
+*Output Filter:*
+- Output inductance (µH)
+- Output capacitance (µF)
+- ESR (mΩ)
+
+*Design Targets:*
+- Crossover frequency (default: 3 kHz)
+- Phase margin (default: 50°)
+
+**Outputs:**
+
+*Power Stage Analysis:*
+- DC gain (dB)
+- LC resonance frequency (Hz)
+- ESR zero frequency (Hz)
+
+*Loop Performance:*
+- Actual crossover frequency (Hz) ✓/✗
+- Actual phase margin (°) ✓/✗
+- Gain margin (dB)
+
+*Bill of Materials:*
+- **RT, CT** - Timing components
+- **R_FB_TOP, R_FB_BOT** - Voltage feedback divider
+- **R_CS, R_CS_FILTER, C_CS_FILTER** - Current sensing
+- **R_COMP_UPPER, R_COMP_LOWER** - Compensation resistors
+- **C_COMP_HF, C_COMP_LF, C_COMP_POLE** - Compensation capacitors
+- **C_SS** - Soft-start capacitor
+
+All components include:
+- Standard values (E96 resistors, E12 capacitors)
+- Recommended tolerances
+- Component types (metal film, C0G/NP0, etc.)
+
+*Bode Plot:*
+- **Magnitude plot** showing loop gain vs frequency
+- **Phase plot** showing phase vs frequency
+- Crossover frequency marker
+- Phase margin indicator
+
+**Example Results:**
+
+For 3kW PSFB (400V → 48V @ 100kHz):
+```
+Power Stage Analysis:
+- DC Gain: 34.0 dB
+- LC Resonance: 1591 Hz
+- ESR Zero: 15915 Hz
+
+Loop Performance:
+- Crossover Frequency: 8870 Hz ✓
+- Phase Margin: 53.3° ✓
+- Gain Margin: 12.0 dB
+
+Bill of Materials:
+RT = 1020 kΩ, CT = 10 nF
+R_COMP_UPPER = 100 kΩ
+R_COMP_LOWER = 187 kΩ
+C_COMP_HF = 390 pF
+C_COMP_LF = 3.9 nF
+C_COMP_POLE = 150 pF
+...
+```
+
+**Design Criteria:**
+- ✅ Crossover > 1 kHz: Ensures fast transient response
+- ✅ Phase Margin > 45°: Ensures stable operation
+- ✅ All standard component values: Easy sourcing
+
+**Use Cases:**
+1. **Complete PSFB Design:** After designing transformer (Tab 5) and selecting output filter, design controller
+2. **Loop Optimization:** Adjust target crossover/PM to optimize transient response vs stability
+3. **Verification:** Check if existing design meets stability criteria
+
+**Integration with Other Tabs:**
+- Get **turns ratio** from Tab 5 (Magnetic Design → Transformer)
+- Get **output inductance** from Tab 5 (Magnetic Design → Inductor)
+- Use with **System Analysis** (Tab 4) for complete power stage
+
+---
+
+### Tab 8: About
 
 Documentation, references, and usage tips.
 
@@ -430,6 +546,48 @@ Documentation, references, and usage tips.
 - Gate charge values
 - Capacitances
 - Confidence scores for each parameter
+
+---
+
+### Example 6: Design UCC28951 Controller ⭐ NEW!
+
+**Goal:** Design complete controller for 3kW PSFB with compensation loop
+
+1. First, design transformer in **"Magnetic Design"** tab:
+   - Get turns ratio (e.g., 8:1 for 400V→48V)
+   - Get output inductor value (e.g., 10µH)
+2. Go to **"UCC28951 Controller"** tab
+3. Enter power stage parameters:
+   - V_in: 360V min, 400V nom, 440V max
+   - V_out: 48V
+   - I_out max: 62.5A (3kW/48V)
+   - Turns ratio: 8.0 (from transformer design)
+   - Output L: 10µH, C: 1000µF, ESR: 10mΩ
+4. Set switching frequency: 100 kHz
+5. Choose design targets:
+   - Crossover: 3000 Hz
+   - Phase Margin: 50°
+6. Click **"Design Controller"**
+7. View Bode plot and component values
+
+**Result:**
+```
+Loop Performance:
+- Crossover: 8870 Hz ✓
+- Phase Margin: 53.3° ✓
+
+BOM:
+RT = 1020 kΩ, CT = 10 nF
+R_COMP_UPPER = 100 kΩ
+R_COMP_LOWER = 187 kΩ
+C_COMP_HF = 390 pF
+C_COMP_LF = 3.9 nF
+C_COMP_POLE = 150 pF
+C_SS = 0.02 µF
+...complete BOM with specs
+```
+
+**Bode Plot:** Shows magnitude and phase response with crossover frequency marked
 
 ---
 
