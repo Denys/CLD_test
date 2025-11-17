@@ -4,14 +4,15 @@ PSFB Loss Analyzer - Graphical User Interface
 
 Web-based GUI using Gradio for interactive PSFB converter analysis.
 
-Complete 7-tab interface:
+Complete 8-tab interface:
     1. MOSFET Loss Analysis - Component library and loss calculations
     2. Diode Loss Analysis - SiC/Si diode loss calculations
     3. Datasheet Parser - Drag & drop PDF parameter extraction
     4. System Analysis - Multi-phase PSFB system analyzer
     5. Magnetic Design - Transformer and inductor design
     6. Optimizer - Automated design optimization with Pareto frontier
-    7. About - Documentation and references
+    7. UCC28951 Controller - TI controller component calculation with Bode plots
+    8. About - Documentation and references
 
 Usage:
     python psfb_gui.py
@@ -66,6 +67,9 @@ from psfb_loss_analyzer import (
     DesignSpecification,
     optimize_design,
     ObjectiveFunction,
+    # UCC28951 Controller
+    UCC28951Specification,
+    design_ucc28951_components,
 )
 
 # ============================================================================
@@ -845,6 +849,157 @@ def run_optimizer(
         return f"Error: {str(e)}\n\n{traceback.format_exc()}", None
 
 # ============================================================================
+# Tab 7: UCC28951 Controller Design
+# ============================================================================
+
+def design_ucc28951_gui(
+    vin_min, vin_nom, vin_max, vout, iout_max,
+    turns_ratio, leakage_inductance,
+    output_inductance, output_capacitance, output_cap_esr,
+    switching_frequency,
+    target_crossover_freq, target_phase_margin
+):
+    """Design UCC28951 controller components"""
+    try:
+        # Create specification
+        spec = UCC28951Specification(
+            vin_min=float(vin_min),
+            vin_nom=float(vin_nom),
+            vin_max=float(vin_max),
+            vout=float(vout),
+            iout_max=float(iout_max),
+            turns_ratio=float(turns_ratio),
+            leakage_inductance=float(leakage_inductance) * 1e-6,  # µH to H
+            output_inductance=float(output_inductance) * 1e-6,  # µH to H
+            output_capacitance=float(output_capacitance) * 1e-6,  # µF to F
+            output_cap_esr=float(output_cap_esr) * 1e-3,  # mΩ to Ω
+            switching_frequency=float(switching_frequency) * 1e3,  # kHz to Hz
+            target_crossover_freq=float(target_crossover_freq),
+            target_phase_margin=float(target_phase_margin),
+        )
+
+        # Design components
+        components = design_ucc28951_components(spec)
+
+        # Create results markdown
+        results = f"""
+## UCC28951 Component Design Results
+
+### Power Stage Analysis
+- **DC Gain:** {20 * np.log10(spec.vin_nom / spec.turns_ratio):.1f} dB
+- **LC Resonance:** {1/(2*np.pi*np.sqrt(spec.output_inductance * spec.output_capacitance)):.0f} Hz
+- **ESR Zero:** {1/(2*np.pi*spec.output_cap_esr * spec.output_capacitance):.0f} Hz
+
+### Loop Performance
+- **Crossover Frequency:** {components.gain_crossover_freq:.0f} Hz {'✓' if components.gain_crossover_freq >= target_crossover_freq else '✗'}
+- **Phase Margin:** {components.phase_margin:.1f}° {'✓' if components.phase_margin >= target_phase_margin else '✗'}
+- **Gain Margin:** {components.gain_margin:.1f} dB
+
+---
+
+### Bill of Materials
+
+**Timing Circuit:**
+- RT = {components.rt/1e3:.0f} kΩ (1%, metal film)
+- CT = {components.ct*1e9:.0f} nF (C0G/NP0, ±5%)
+
+**Voltage Feedback:**
+- R_FB_TOP = {components.r_fb_top/1e3:.0f} kΩ (1%, metal film)
+- R_FB_BOT = {components.r_fb_bot/1e3:.0f} kΩ (1%, metal film)
+
+**Current Sensing:**
+- R_CS = {components.r_cs*1e3:.1f} mΩ (1%, ±50ppm/°C, 2W+)
+- R_CS_FILTER = {components.r_cs_filter/1e3:.1f} kΩ (1%)
+- C_CS_FILTER = {components.c_cs_filter*1e9:.1f} nF (C0G/NP0)
+
+**Compensation Network (Type III):**
+- R_COMP_UPPER = {components.r_comp_upper/1e3:.0f} kΩ (1%, metal film)
+- R_COMP_LOWER = {components.r_comp_lower/1e3:.0f} kΩ (1%, metal film)
+- C_COMP_HF = {components.c_comp_hf*1e12:.0f} pF (C0G/NP0, ±5%)
+- C_COMP_LF = {components.c_comp_lf*1e9:.1f} nF (C0G/NP0, ±10%)
+- C_COMP_POLE = {components.c_comp_pole*1e12:.0f} pF (C0G/NP0, ±10%)
+
+**Soft-Start:**
+- C_SS = {components.c_ss*1e6:.2f} µF (ceramic or film)
+
+---
+
+### Design Targets
+Target Crossover: {target_crossover_freq:.0f} Hz → Achieved: {components.gain_crossover_freq:.0f} Hz
+Target Phase Margin: {target_phase_margin:.0f}° → Achieved: {components.phase_margin:.1f}°
+"""
+
+        # Create Bode plot visualization
+        import matplotlib.pyplot as plt
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
+
+        # Frequency range for Bode plot
+        freqs = np.logspace(1, 6, 1000)  # 10 Hz to 1 MHz
+        s = 2j * np.pi * freqs
+
+        # Power stage transfer function (simplified)
+        f0 = 1/(2*np.pi*np.sqrt(spec.output_inductance * spec.output_capacitance))
+        fz_esr = 1/(2*np.pi*spec.output_cap_esr * spec.output_capacitance)
+        Gdc = spec.vin_nom / spec.turns_ratio
+
+        w0 = 2*np.pi*f0
+        wz_esr = 2*np.pi*fz_esr
+        Q = 7.0  # Typical
+
+        # Power stage
+        Gp = Gdc * (1 + s/wz_esr) / (1 + s/(Q*w0) + s**2/w0**2)
+
+        # Compensator (Type III)
+        fz1 = 1/(2*np.pi*components.r_comp_upper*components.c_comp_lf)
+        fz2 = 1/(2*np.pi*components.r_comp_upper*components.c_comp_hf)
+        fp1 = 1/(2*np.pi*components.r_comp_lower*components.c_comp_lf)
+        fp2 = 1/(2*np.pi*components.r_comp_upper*components.c_comp_pole)
+
+        wz1 = 2*np.pi*fz1
+        wz2 = 2*np.pi*fz2
+        wp1 = 2*np.pi*fp1
+        wp2 = 2*np.pi*fp2
+
+        s_safe = s + 1e-10
+        Gc = (components.r_comp_upper/components.r_comp_lower) * \
+             (1 + s/wz1) * (1 + s/wz2) / (s_safe/wp1 * (1 + s/wp2))
+
+        # Loop gain
+        T = Gp * Gc
+        T_mag = 20 * np.log10(np.abs(T) + 1e-12)
+        T_phase = np.angle(T, deg=True)
+
+        # Magnitude plot
+        ax1.semilogx(freqs, T_mag, 'b-', linewidth=2, label='Loop Gain')
+        ax1.axhline(0, color='k', linestyle='--', alpha=0.3)
+        ax1.axvline(components.gain_crossover_freq, color='r', linestyle='--',
+                   alpha=0.5, label=f'Crossover: {components.gain_crossover_freq:.0f} Hz')
+        ax1.grid(True, which='both', alpha=0.3)
+        ax1.set_ylabel('Magnitude (dB)', fontsize=11)
+        ax1.set_title('Loop Gain Bode Plot', fontsize=12, fontweight='bold')
+        ax1.legend(loc='upper right')
+        ax1.set_ylim([-60, 100])
+
+        # Phase plot
+        ax2.semilogx(freqs, T_phase, 'r-', linewidth=2, label='Phase')
+        ax2.axhline(-180, color='k', linestyle='--', alpha=0.3)
+        ax2.axvline(components.gain_crossover_freq, color='r', linestyle='--',
+                   alpha=0.5, label=f'PM: {components.phase_margin:.1f}°')
+        ax2.grid(True, which='both', alpha=0.3)
+        ax2.set_xlabel('Frequency (Hz)', fontsize=11)
+        ax2.set_ylabel('Phase (degrees)', fontsize=11)
+        ax2.legend(loc='lower left')
+        ax2.set_ylim([-270, 90])
+
+        plt.tight_layout()
+
+        return results, fig
+
+    except Exception as e:
+        import traceback
+        return f"Error: {str(e)}\n\n{traceback.format_exc()}", None
+
+# ============================================================================
 # Create Gradio Interface
 # ============================================================================
 
@@ -1232,7 +1387,73 @@ def create_gui():
                 )
 
             # ================================================================
-            # Tab 7: About
+            # Tab 7: UCC28951 Controller Design
+            # ================================================================
+            with gr.Tab("UCC28951 Controller"):
+                gr.Markdown("## UCC28951 Controller Component Calculation")
+                gr.Markdown("Design compensation loop for phase-shifted full-bridge controller")
+
+                with gr.Row():
+                    with gr.Column():
+                        gr.Markdown("### Power Stage Parameters")
+                        ucc_vin_min = gr.Number(label="V_in Min (V)", value=360)
+                        ucc_vin_nom = gr.Number(label="V_in Nominal (V)", value=400)
+                        ucc_vin_max = gr.Number(label="V_in Max (V)", value=440)
+                        ucc_vout = gr.Number(label="V_out (V)", value=48)
+                        ucc_iout_max = gr.Number(label="I_out Max (A)", value=62.5)
+
+                        gr.Markdown("### Transformer & Filter")
+                        ucc_turns_ratio = gr.Number(label="Turns Ratio (N_pri/N_sec)", value=8.0)
+                        ucc_leakage = gr.Number(label="Leakage Inductance (µH)", value=10)
+                        ucc_lo = gr.Number(label="Output Inductance (µH)", value=10)
+                        ucc_co = gr.Number(label="Output Capacitance (µF)", value=1000)
+                        ucc_esr = gr.Number(label="Output Cap ESR (mΩ)", value=10)
+
+                    with gr.Column():
+                        gr.Markdown("### Operating Conditions")
+                        ucc_fsw = gr.Slider(50, 200, value=100, step=10, label="Switching Frequency (kHz)")
+
+                        gr.Markdown("### Design Targets")
+                        ucc_fc_target = gr.Slider(1000, 10000, value=3000, step=500,
+                                                 label="Target Crossover Frequency (Hz)")
+                        ucc_pm_target = gr.Slider(30, 80, value=50, step=5,
+                                                 label="Target Phase Margin (°)")
+
+                        design_ucc_btn = gr.Button("Design Controller", variant="primary", size="lg")
+
+                        gr.Markdown("""
+                        ### Design Goals
+                        - Crossover Frequency: > 1 kHz
+                        - Phase Margin: > 45°
+                        - Stable across load range
+
+                        ### Features
+                        - Type III compensation network
+                        - Bode plot visualization
+                        - Complete BOM with tolerances
+                        """)
+
+                with gr.Row():
+                    ucc_results = gr.Markdown("Enter parameters and click Design Controller...")
+
+                with gr.Row():
+                    ucc_plot = gr.Plot(label="Loop Gain Bode Plot")
+
+                # Connect design button
+                design_ucc_btn.click(
+                    fn=design_ucc28951_gui,
+                    inputs=[
+                        ucc_vin_min, ucc_vin_nom, ucc_vin_max, ucc_vout, ucc_iout_max,
+                        ucc_turns_ratio, ucc_leakage,
+                        ucc_lo, ucc_co, ucc_esr,
+                        ucc_fsw,
+                        ucc_fc_target, ucc_pm_target
+                    ],
+                    outputs=[ucc_results, ucc_plot]
+                )
+
+            # ================================================================
+            # Tab 8: About
             # ================================================================
             with gr.Tab("About"):
                 gr.Markdown("""
@@ -1280,7 +1501,15 @@ def create_gui():
                 - **Pareto frontier** visualization
                 - Best design recommendations
 
-                ### 7️⃣ About
+                ### 7️⃣ UCC28951 Controller (NEW!)
+                - **TI UCC28951/UCC28950** component calculation
+                - **Type III compensation** network design
+                - **Bode plot** visualization (magnitude + phase)
+                - Loop stability analysis (crossover, phase margin)
+                - Complete BOM with component specs
+                - Design targets: Crossover > 1kHz, PM > 45°
+
+                ### 8️⃣ About
                 - Documentation and references
 
                 ---
